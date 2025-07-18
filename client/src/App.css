@@ -1,42 +1,427 @@
+/* Imports da fonte medieval */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=Uncial+Antiqua&display=swap');
+
+/* Reset e variáveis */
+:root {
+  --primary-gold: #d4af37;
+  --secondary-gold: #b8860b;
+  --dark-brown: #2c1810;
+  --medium-brown: #4a3426;
+  --light-brown: #8b6914;
+  --parchment: #f4f1e8;
+  --dark-red: #8b0000;
+  --emerald: #50c878;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Cinzel', serif;
+  background: linear-gradient(135deg, var(--dark-brown) 0%, var(--medium-brown) 50%, var(--dark-brown) 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  color: var(--parchment);
+  overflow-x: hidden;
+}
+
+/* Efeito de pergaminho de fundo */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='parch' patternUnits='userSpaceOnUse' width='100' height='100'%3E%3Cpath d='M0 0h100v100H0z' fill='%23000' fill-opacity='0.03'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23parch)'/%3E%3C/svg%3E");
+  z-index: -1;
+  opacity: 0.6;
+}
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 20px;
+  width: 100%;
+}
+
+.container {
+  background: linear-gradient(145deg, rgba(244, 241, 232, 0.95) 0%, rgba(240, 235, 220, 0.95) 100%);
+  border: 3px solid var(--primary-gold);
+  border-radius: 20px;
+  box-shadow: 
+    0 0 30px rgba(212, 175, 55, 0.4),
+    inset 0 0 30px rgba(139, 69, 19, 0.1);
+  padding: 40px;
+  max-width: 1200px;
+  width: 100%;
+  color: var(--dark-brown);
+  position: relative;
+  backdrop-filter: blur(10px);
+  margin: 20px auto;
+}
+
+/* Decorações nas bordas */
+.container::before,
+.container::after {
+  content: '';
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: var(--primary-gold);
+  border-radius: 50%;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+}
+
+.container::before {
+  top: -15px;
+  left: -15px;
+}
+
+.container::after {
+  bottom: -15px;
+  right: -15px;
+}
+
+/* Título principal */
+h1 {
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: 3.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 40px;
+  background: linear-gradient(45deg, var(--primary-gold), var(--secondary-gold), var(--primary-gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+h1::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--primary-gold), transparent);
+  border-radius: 2px;
+}
+
+/* Subtítulos */
+h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: var(--dark-red);
+  margin-bottom: 25px;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--medium-brown);
+  margin-bottom: 15px;
+  border-bottom: 2px solid var(--primary-gold);
+  padding-bottom: 8px;
+}
+
+/* Loading spinner */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  font-size: 1.4rem;
+  color: var(--primary-gold);
+}
+
+.loading::before {
+  content: '⚔️';
+  font-size: 3rem;
+  animation: spin 2s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Character Menu Styles */
+.character-menu {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 246, 240, 0.95) 100%);
+  border: 2px solid var(--primary-gold);
+  border-radius: 15px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 
+    0 6px 20px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.menu-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--dark-red);
+  margin: 0;
+}
+
+.characters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.character-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 246, 240, 0.9) 100%);
+  border: 2px solid var(--light-brown);
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.character-card:hover {
+  border-color: var(--primary-gold);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+}
+
+.character-card.selected {
+  border-color: var(--primary-gold);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+}
+
+.character-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-gold), var(--secondary-gold));
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.character-card:hover::before {
+  transform: scaleX(1);
+}
+
+.card-character-name {
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--dark-brown);
+  margin-bottom: 10px;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.card-character-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.card-info-label {
+  color: var(--medium-brown);
+  font-weight: 600;
+}
+
+.card-info-value {
+  color: var(--dark-brown);
+  font-weight: 700;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  gap: 10px;
+}
+
+.btn-small {
+  padding: 8px 15px;
+  font-size: 0.85rem;
+  border-radius: 8px;
+  flex: 1;
+}
+
+.btn-view {
+  background: linear-gradient(135deg, var(--emerald) 0%, #45b069 100%);
+  color: white;
+}
+
+.btn-delete {
+  background: linear-gradient(135deg, var(--dark-red) 0%, #a00000 100%);
+  color: white;
+}
+
+.empty-characters {
+  text-align: center;
+  padding: 40px;
+  color: var(--medium-brown);
+  font-style: italic;
+}
+
+.empty-characters-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  opacity: 0.6;
+}
+
+/* Navigation */
+.nav-menu {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.nav-btn {
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  padding: 12px 25px;
+  border: 2px solid var(--primary-gold);
+  border-radius: 25px;
+  background: transparent;
+  color: var(--dark-brown);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.nav-btn:hover {
+  background: var(--primary-gold);
+  color: var(--dark-brown);
+  transform: translateY(-2px);
+}
+
+.nav-btn.active {
+  background: var(--primary-gold);
+  color: var(--dark-brown);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .container {
+    max-width: 95%;
+    padding: 30px;
   }
-  to {
-    transform: rotate(360deg);
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+  
+  .container {
+    padding: 20px;
+    margin: 10px;
+    border-radius: 15px;
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+  }
+  
+  .characters-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .menu-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .nav-menu {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .nav-btn {
+    width: 200px;
+  }
+  
+  .card-actions {
+    flex-direction: column;
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+@media (max-width: 480px) {
+  .container {
+    padding: 15px;
+    margin: 5px;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  .character-card {
+    padding: 15px;
+  }
+  
+  .card-character-name {
+    font-size: 1.2rem;
   }
 }
 
-.card {
-  padding: 2em;
+/* Print styles */
+@media print {
+  body {
+    background: white;
+  }
+  
+  .container {
+    background: white;
+    border: 2px solid #000;
+    box-shadow: none;
+    max-width: 100%;
+    margin: 0;
+    padding: 20px;
+  }
+  
+  .character-menu,
+  .nav-menu,
+  .sheet-actions {
+    display: none;
+  }
 }
 
-.read-the-docs {
-  color: #888;
-}
+/* Estilos para os componentes serão aplicados nos arquivos específicos */
