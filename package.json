@@ -4,11 +4,11 @@
   "description": "D&D Character Sheets App",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
-    "dev": "electron . --dev",
-    "build:web": "copy index.html www\\ && copy preload.js www\\ && copy styles.css www\\",
-    "build:android": "npm run build:web && npx cap copy android",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npm run build:react && electron . --dev",
+    "start": "npm run build:react && electron .",
+    "build:react": "npm run build --prefix client",
+    "build:web": "npm run build:react",
+    "build:android": "npm run build:web && npx cap copy android && npx cap open android"
   },
   "keywords": [
     "dnd",

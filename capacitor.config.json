@@ -1,5 +1,5 @@
 {
   "appId": "com.williednddnd.app",
   "appName": "DnD Fichas",
-  "webDir": "www"
+  "webDir": "client/dist" 
 }

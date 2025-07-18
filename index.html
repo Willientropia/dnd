@@ -13,36 +13,68 @@
             <p>Conectando ao Firebase...</p>
         </div>
 
-        <div class="app-info">
-            <h2>Sobre o Aplicativo</h2>
-            <p>Este é um aplicativo para criação e gerenciamento de fichas de personagens de D&D, desenvolvido com tecnologias modernas para funcionar tanto no desktop quanto no mobile.</p>
+        <div id="character-creator">
+            <div id="step-1" class="creator-step">
+                <h2>Passo 1: Raça e Classe</h2>
+                <div class="form-group">
+                    <label for="race-select">Escolha sua Raça:</label>
+                    <select id="race-select" class="form-control"></select>
+                </div>
+                <div class="form-group">
+                    <label for="class-select">Escolha sua Classe:</label>
+                    <select id="class-select" class="form-control"></select>
+                </div>
+                <button id="to-step-2" class="btn">Próximo</button>
+            </div>
+
+            <div id="step-2" class="creator-step" style="display:none;">
+                <h2>Passo 2: Habilidades (Ability Scores)</h2>
+                <p>Role ou distribua seus pontos de habilidade.</p>
+                <div id="ability-scores"></div>
+                <button id="roll-abilities" class="btn">Rolar Dados (4d6 drop lowest)</button>
+                <button id="to-step-3" class="btn">Próximo</button>
+            </div>
             
-            <div class="features">
-                <div class="feature-card">
-                    <h3>🖥️ Desktop</h3>
-                    <p>Aplicação nativa para Windows usando Electron</p>
+            <div id="step-3" class="creator-step" style="display:none;">
+                <h2>Passo 3: Detalhes Finais</h2>
+                <div class="form-group">
+                    <label for="character-name">Nome do Personagem:</label>
+                    <input type="text" id="character-name" class="form-control" placeholder="Seu nome aqui...">
                 </div>
-                
-                <div class="feature-card">
-                    <h3>📱 Mobile</h3>
-                    <p>Versão Android usando Capacitor</p>
-                </div>
-                
-                <div class="feature-card">
-                    <h3>☁️ Cloud</h3>
-                    <p>Sincronização em tempo real com Firebase</p>
-                </div>
+                <button id="finish-creation" class="btn">Finalizar e Criar Ficha</button>
             </div>
         </div>
+
+        <div id="character-sheet" style="display:none;">
+            <h2 id="sheet-char-name"></h2>
+            <div class="sheet-grid">
+                <div class="sheet-section">
+                    <h3>Atributos</h3>
+                    <p><strong>Raça:</strong> <span id="sheet-race"></span></p>
+                    <p><strong>Classe:</strong> <span id="sheet-class"></span></p>
+                    <p><strong>Nível:</strong> 1</p>
+                    <p><strong>HP:</strong> <span id="sheet-hp"></span></p>
+                </div>
+                <div class="sheet-section">
+                    <h3>Habilidades</h3>
+                    <ul id="sheet-abilities" class="abilities-list"></ul>
+                </div>
+                <div class="sheet-section">
+                    <h3>Magias (se aplicável)</h3>
+                    <div id="sheet-spells"></div>
+                </div>
+            </div>
+             <button id="new-character-btn" class="btn">Criar Novo Personagem</button>
+        </div>
+
     </div>
 
     <script type="module">
-      // Import the functions you need from the SDKs you need
       import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
       import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-      import { getFirestore } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+      import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-      // Your web app's Firebase configuration
+      // Sua configuração do Firebase
       const firebaseConfig = {
         apiKey: "AIzaSyB_cD7jTA4NuG0mMKeHsJlY9lBfElKHdWA",
         authDomain: "dnd-character-creator-4f39b.firebaseapp.com",
@@ -53,23 +85,31 @@
         measurementId: "G-PENVZK9V8N"
       };
 
-      // Initialize Firebase
       const app = initializeApp(firebaseConfig);
       const auth = getAuth(app);
       const db = getFirestore(app);
 
       const statusElement = document.getElementById('status');
+      
+      // Importa a lógica do criador de personagem
+      import { initCharacterCreator, loadCharacter } from './character-creator.js';
 
       signInAnonymously(auth)
-        .then(() => {
-          console.log("Signed in anonymously");
+        .then(async ({user}) => {
+          console.log("Signed in anonymously", user.uid);
           statusElement.className = 'status success';
           statusElement.innerHTML = '<p>✅ Conectado ao Firebase com sucesso!</p>';
+          
+          // Tenta carregar um personagem existente ou inicia o criador
+          const character = await loadCharacter(db, user.uid);
+          if (character) {
+              document.getElementById('character-creator').style.display = 'none';
+          } else {
+              initCharacterCreator(db, user.uid);
+          }
         })
         .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          console.error("Anonymous sign-in failed:", errorCode, errorMessage);
+          console.error("Anonymous sign-in failed:", error);
           statusElement.className = 'status error';
           statusElement.innerHTML = '<p>❌ Falha na conexão com o Firebase</p>';
         });

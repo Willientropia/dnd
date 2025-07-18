@@ -6,13 +6,14 @@ function createWindow () {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: true,
-      contextIsolation: false
+      // preload: path.join(__dirname, 'preload.js'), // Preload pode ser necessário para funcionalidades avançadas
+      nodeIntegration: false,
+      contextIsolation: true
     }
   });
 
-  win.loadFile('index.html');
+  // Aponte para o build do React
+  win.loadFile(path.join(__dirname, 'client/dist/index.html'));
 }
 
 app.whenReady().then(() => {
