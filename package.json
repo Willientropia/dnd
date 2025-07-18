@@ -1,0 +1,29 @@
+{
+  "name": "dnd-fichas",
+  "version": "1.0.0",
+  "description": "D&D Character Sheets App",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build:web": "copy index.html www\\ && copy preload.js www\\ && copy styles.css www\\",
+    "build:android": "npm run build:web && npx cap copy android",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "dnd",
+    "electron",
+    "character-sheets"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^37.2.3"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.4.2",
+    "@capacitor/cli": "^7.4.2",
+    "@capacitor/core": "^7.4.2"
+  }
+}
