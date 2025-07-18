@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchData } from '../api';
+import { fetchData } from '../services';
 
 function CharacterCreator({ onCharacterCreated }) {
     const [step, setStep] = useState(1);

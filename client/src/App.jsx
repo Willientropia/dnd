@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { db, auth, signInAnonymously } from './firebase';
+import { db, auth, signInAnonymously } from './services';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import CharacterCreator from './components/CharacterCreator';
 import CharacterSheet from './components/CharacterSheet';

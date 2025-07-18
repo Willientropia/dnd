@@ -2,13 +2,15 @@
   "name": "dnd-fichas",
   "version": "1.0.0",
   "description": "D&D Character Sheets App",
-  "main": "main.js",
+  "main": "electron/main.js",
   "scripts": {
-    "dev": "npm run build:react && electron . --dev",
-    "start": "npm run build:react && electron .",
-    "build:react": "npm run build --prefix client",
-    "build:web": "npm run build:react",
-    "build:android": "npm run build:web && npx cap copy android && npx cap open android"
+    "dev": "node scripts/dev-electron.js",
+    "dev:hot": "node scripts/dev-hot.js",
+    "start": "node scripts/start-electron.js",
+    "build:react": "node scripts/build-react.js",
+    "build:web": "node scripts/build-react.js",
+    "build:android": "node scripts/build-android.js",
+    "clean": "node scripts/clean.js"
   },
   "keywords": [
     "dnd",

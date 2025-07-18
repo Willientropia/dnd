@@ -1,23 +1,34 @@
 # D&D Fichas
 
-Uma aplicação para criação e gerenciamento de fichas de personagens de D&D, desenvolvida com Electron para desktop (Windows) e Capacitor para mobile (Android).
+Uma aplicação para criação e gerenciamento de fichas de personagens de D&D, desenvolvida com tecnologias modernas para funcionar em múltiplas plataformas.
 
-## Características
+## 🚀 Características
 
-- ✅ Aplicação desktop com Electron
-- ✅ Aplicação mobile com Capacitor
-- ✅ Integração com Firebase (Firestore + Auth Anônimo)
-- ✅ Interface responsiva
+- 🖥️ **Desktop**: Aplicação nativa com Electron
+- 📱 **Mobile**: App Android com Capacitor  
+- 🌐 **Web**: Interface React responsiva
+- ☁️ **Cloud**: Sincronização com Firebase
+- 🎲 **D&D API**: Integração com Open5e para dados oficiais
 
-## Configuração do Firebase
+## 📁 Estrutura do Projeto
 
-O app está configurado para usar o Firebase com autenticação anônima e acesso ao Firestore. As regras de segurança permitem leitura/escrita até 17 de agosto de 2025.
+O projeto foi reorganizado com uma estrutura limpa e modular:
 
-## Como executar
+```
+├── 📁 client/     # Aplicação React
+├── 📁 electron/   # Scripts Electron
+├── 📁 scripts/    # Scripts de build
+├── 📁 android/    # Projeto Android
+└── 📁 docs/       # Documentação
+```
 
-### Versão Desktop (Electron)
+Veja [STRUCTURE.md](docs/STRUCTURE.md) para detalhes completos.
+
+## 🛠️ Como usar
+
+### Desenvolvimento
 ```bash
-npm start
+npm run dev           # Executa Electron em modo desenvolvimento
 ```
 
 ### Versão Mobile (Android)
