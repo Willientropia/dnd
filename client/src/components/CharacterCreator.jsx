@@ -8,8 +8,10 @@ function CharacterCreator({ onCharacterCreated }) {
     const [races, setRaces] = useState([]);
     const [classes, setClasses] = useState([]);
     const [spells, setSpells] = useState([]);
+    const [classSpells, setClassSpells] = useState({ cantrips: [], level1: [] });
     const [equipment, setEquipment] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [spellsLoading, setSpellsLoading] = useState(false);
     
     const [character, setCharacter] = useState({
         name: '',
@@ -106,15 +108,13 @@ function CharacterCreator({ onCharacterCreated }) {
         const loadData = async () => {
             setLoading(true);
             try {
-                const [racesData, classesData, spellsData, equipmentData] = await Promise.all([
+                const [racesData, classesData, equipmentData] = await Promise.all([
                     fetchData('races'),
                     fetchData('classes'),
-                    fetchData('spells'),
                     fetchData('equipment')
                 ]);
                 setRaces(racesData);
                 setClasses(classesData);
-                setSpells(spellsData);
                 setEquipment(equipmentData);
             } catch (error) {
                 console.error('Erro ao carregar dados:', error);
@@ -124,6 +124,29 @@ function CharacterCreator({ onCharacterCreated }) {
         };
         loadData();
     }, []);
+
+    // Modifique o useEffect para carregar magias da classe quando a classe for selecionada
+    useEffect(() => {
+        const loadClassSpells = async () => {
+            if (character.class) {
+                setSpellsLoading(true);
+                try {
+                    const cantrips = await fetchData('spells', { dnd_class: character.class.slug, level: 0 });
+                    const level1Spells = await fetchData('spells', { dnd_class: character.class.slug, level: 1 });
+
+                    // ADICIONE ESTA LINHA PARA DEBUG:
+                    console.log('Magias recebidas da API:', { cantrips, level1Spells });
+
+                    setClassSpells({ cantrips, level1: level1Spells });
+                } catch (error) {
+                    console.error('Erro ao carregar magias da classe:', error);
+                } finally {
+                    setSpellsLoading(false);
+                }
+            }
+        };
+        loadClassSpells();
+    }, [character.class]);
 
     // Atualiza HP quando constituição ou nível mudam
     useEffect(() => {

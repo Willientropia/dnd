@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db, auth, signInAnonymously } from './services';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, addDoc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 import CharacterCreator from './components/CharacterCreator';
 import CharacterSheet from './components/CharacterSheet';
 import CharacterMenu from './components/CharacterMenu';
@@ -16,27 +17,70 @@ function App() {
     useEffect(() => {
         const initializeApp = async () => {
             try {
+                console.log('🔄 Iniciando autenticação anônima...');
+                
+                // Verifica se já existe um usuário autenticado
+                const existingUser = auth.currentUser;
+                if (existingUser) {
+                    console.log('✅ Usuário já autenticado:', existingUser.uid);
+                    setUser(existingUser);
+                    setLoading(false);
+                    return;
+                }
+
+                // Realiza login anônimo
                 const userCredential = await signInAnonymously(auth);
                 const uid = userCredential.user.uid;
+                console.log('✅ Login anônimo realizado com sucesso:', uid);
                 setUser(userCredential.user);
                 
-                // Tenta carregar o personagem existente
-                const docRef = doc(db, "characters", uid);
-                const docSnap = await getDoc(docRef);
+                // Initialize user document if it doesn't exist
+                console.log('🔄 Verificando documento do usuário...');
+                const userDocRef = doc(db, "users", uid);
+                const userDocSnap = await getDoc(userDocRef);
                 
-                if (docSnap.exists()) {
-                    setCharacter(docSnap.data());
-                    setCurrentView('sheet');
+                if (!userDocSnap.exists()) {
+                    console.log('📝 Criando documento do usuário...');
+                    await setDoc(userDocRef, { 
+                        createdAt: new Date(),
+                        isAnonymous: true 
+                    });
+                    console.log('✅ Documento do usuário criado');
+                } else {
+                    console.log('✅ Documento do usuário já existe');
                 }
+                
+                console.log('✅ Inicialização concluída com sucesso');
             } catch (error) {
-                console.error("Erro ao inicializar:", error);
-                setError("Erro ao conectar com o servidor. Verifique sua conexão.");
+                console.error("❌ Erro ao inicializar:", error);
+                
+                // Mensagens de erro mais específicas
+                let errorMessage = "Erro ao conectar com o servidor.";
+                
+                if (error.code === 'auth/operation-not-allowed') {
+                    errorMessage = "Login anônimo não está habilitado no Firebase. Entre em contato com o administrador.";
+                } else if (error.code === 'auth/network-request-failed') {
+                    errorMessage = "Erro de conexão com a internet. Verifique sua conexão.";
+                } else if (error.code === 'permission-denied') {
+                    errorMessage = "Sem permissão para acessar o banco de dados.";
+                }
+                
+                setError(errorMessage);
             } finally {
                 setLoading(false);
             }
         };
 
+        // Listener para mudanças no estado de autenticação
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user && !user.isAnonymous) {
+                console.log('⚠️ Usuário não é anônimo:', user.uid);
+            }
+        });
+
         initializeApp();
+
+        return () => unsubscribe();
     }, []);
 
     const handleCharacterCreated = async (newCharacter) => {
@@ -46,9 +90,14 @@ function App() {
         }
         
         try {
-            const docRef = doc(db, "characters", user.uid);
-            await setDoc(docRef, newCharacter);
-            setCharacter(newCharacter);
+            // Salva o novo personagem em uma subcoleção do usuário
+            const userCharactersCollection = collection(db, "users", user.uid, "characters");
+            const docRef = await addDoc(userCharactersCollection, newCharacter);
+
+            // Atualiza o estado com o novo personagem (incluindo o novo ID)
+            const characterWithId = { ...newCharacter, id: docRef.id };
+            setCharacter(characterWithId);
+
             setCurrentView('sheet');
             setError(null);
         } catch (error) {
@@ -175,6 +224,7 @@ function App() {
                 <CharacterSheet 
                     character={character} 
                     onNewCharacter={handleNewCharacter} 
+                    user={user}
                 />
             )}
             

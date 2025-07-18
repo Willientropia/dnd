@@ -9,13 +9,18 @@ function CharacterSheet({ character: initialCharacter, onNewCharacter, user }) {
     const [editMode, setEditMode] = useState(false);
     const [activeTab, setActiveTab] = useState('main');
 
+    // Adicione este useEffect para manter o estado sincronizado com as props
+    useEffect(() => {
+        setCharacter(initialCharacter);
+    }, [initialCharacter]);
+
     // Auto-save quando o personagem muda
     useEffect(() => {
         const saveCharacter = async () => {
-            if (!user || !character) return;
+            if (!user || !character || !character.id) return;
             
             try {
-                const docRef = doc(db, 'characters', user.uid);
+                const docRef = doc(db, 'users', user.uid, 'characters', character.id);
                 await updateDoc(docRef, character);
             } catch (error) {
                 console.error('Erro ao salvar:', error);

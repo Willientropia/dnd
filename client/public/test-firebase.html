@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Firebase Login Anônimo</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .log { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        .success { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background-color: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        button { padding: 10px 20px; margin: 10px 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🔥 Teste Firebase Login Anônimo</h1>
+    <div id="logs"></div>
+    <button onclick="testConnection()">🔄 Testar Conexão</button>
+    <button onclick="clearLogs()">🗑️ Limpar Logs</button>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB_cD7jTA4NuG0mMKeHsJlY9lBfElKHdWA",
+            authDomain: "dnd-character-creator-4f39b.firebaseapp.com",
+            projectId: "dnd-character-creator-4f39b",
+            storageBucket: "dnd-character-creator-4f39b.firebasestorage.app",
+            messagingSenderId: "428339560101",
+            appId: "1:428339560101:web:3031100a258b658cc9d74c",
+            measurementId: "G-PENVZK9V8N"
+        };
+
+        let app, db, auth;
+
+        function addLog(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const logDiv = document.createElement('div');
+            logDiv.className = `log ${type}`;
+            logDiv.innerHTML = `<strong>${new Date().toLocaleTimeString()}:</strong> ${message}`;
+            logs.appendChild(logDiv);
+            console.log(message);
+        }
+
+        window.clearLogs = function() {
+            document.getElementById('logs').innerHTML = '';
+        }
+
+        window.testConnection = async function() {
+            try {
+                addLog('🔄 Inicializando Firebase...', 'info');
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                addLog('✅ Firebase inicializado com sucesso', 'success');
+
+                addLog('🔄 Tentando login anônimo...', 'info');
+                const userCredential = await signInAnonymously(auth);
+                addLog(`✅ Login anônimo realizado: ${userCredential.user.uid}`, 'success');
+                addLog(`🔒 Usuário é anônimo: ${userCredential.user.isAnonymous}`, 'info');
+
+                addLog('🔄 Testando escrita no Firestore...', 'info');
+                const testDoc = doc(db, "test", "connection");
+                await setDoc(testDoc, { 
+                    timestamp: new Date(), 
+                    test: true,
+                    userId: userCredential.user.uid 
+                });
+                addLog('✅ Escrita no Firestore bem-sucedida', 'success');
+
+                addLog('🔄 Testando leitura do Firestore...', 'info');
+                const docSnap = await getDoc(testDoc);
+                if (docSnap.exists()) {
+                    addLog('✅ Leitura do Firestore bem-sucedida', 'success');
+                    addLog(`📄 Dados: ${JSON.stringify(docSnap.data())}`, 'info');
+                } else {
+                    addLog('❌ Documento não existe', 'error');
+                }
+
+                addLog('🎉 Todos os testes passaram!', 'success');
+
+            } catch (error) {
+                addLog(`❌ Erro: ${error.message}`, 'error');
+                addLog(`🔧 Código do erro: ${error.code}`, 'error');
+                
+                if (error.code === 'auth/operation-not-allowed') {
+                    addLog('💡 Solução: Habilite login anônimo no Firebase Console', 'error');
+                    addLog('   1. Vá para Firebase Console > Authentication > Sign-in method', 'error');
+                    addLog('   2. Habilite "Anonymous" provider', 'error');
+                }
+            }
+        }
+
+        // Auto-run test on page load
+        addLog('📋 Página carregada. Clique no botão para testar.', 'info');
+    </script>
+</body>
+</html>

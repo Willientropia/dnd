@@ -16,10 +16,10 @@ function CharacterMenu({ user, onSelectCharacter, onNewCharacter, currentCharact
         
         setLoading(true);
         try {
-            // Para simplicidade, vamos usar uma subcoleção ou nomear com o UID
-            // Por ora, vamos carregar apenas o personagem atual do usuário
-            // Em uma implementação completa, você usaria uma subcoleção
-            setCharacters(currentCharacter ? [currentCharacter] : []);
+            const userCharactersCollection = collection(db, "users", user.uid, "characters");
+            const querySnapshot = await getDocs(userCharactersCollection);
+            const loadedCharacters = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setCharacters(loadedCharacters);
         } catch (error) {
             console.error('Erro ao carregar personagens:', error);
         } finally {
@@ -28,12 +28,17 @@ function CharacterMenu({ user, onSelectCharacter, onNewCharacter, currentCharact
     };
 
     const handleDeleteCharacter = async (characterId) => {
+        if (!user || !characterId) return;
         if (!confirm('Tem certeza que deseja excluir este personagem?')) return;
         
         try {
-            await deleteDoc(doc(db, 'characters', user.uid));
-            onSelectCharacter(null);
+            await deleteDoc(doc(db, "users", user.uid, "characters", characterId));
+            // Recarrega a lista de personagens
             loadCharacters();
+            // Se o personagem deletado era o personagem ativo, limpa o estado no App
+            if (currentCharacter && currentCharacter.id === characterId) {
+                onSelectCharacter(null);
+            }
         } catch (error) {
             console.error('Erro ao excluir personagem:', error);
             alert('Erro ao excluir personagem');
@@ -83,8 +88,8 @@ function CharacterMenu({ user, onSelectCharacter, onNewCharacter, currentCharact
                 <div className="characters-grid">
                     {characters.map((character, index) => (
                         <div
-                            key={`character-${index}`}
-                            className={`character-card ${currentCharacter === character ? 'selected' : ''}`}
+                            key={character.id || `character-${index}`}
+                            className={`character-card ${currentCharacter && currentCharacter.id === character.id ? 'selected' : ''}`}
                         >
                             <div className="card-character-name">
                                 {character.name || 'Herói Sem Nome'}
@@ -123,7 +128,7 @@ function CharacterMenu({ user, onSelectCharacter, onNewCharacter, currentCharact
                                 </button>
                                 <button 
                                     className="btn btn-small btn-delete"
-                                    onClick={() => handleDeleteCharacter(index)}
+                                    onClick={() => handleDeleteCharacter(character.id)}
                                 >
                                     🗑️ Excluir
                                 </button>

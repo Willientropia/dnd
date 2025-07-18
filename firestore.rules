@@ -1,0 +1,28 @@
+// Regras do Firestore para permitir acesso anônimo
+// IMPORTANTE: Essas regras são para desenvolvimento/teste apenas
+// Em produção, use regras mais restritivas
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Permite acesso de leitura e escrita para usuários autenticados (incluindo anônimos)
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Específicamente para usuários anônimos
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Subcoleção de personagens
+    match /users/{userId}/characters/{characterId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Documentos de teste
+    match /test/{document} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
